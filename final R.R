@@ -103,7 +103,7 @@ preg_3_plot = ggplot(preg_3, aes(x = distrito_nombre, y = votos, fill = eleccion
 preg_3_plot
 
 # pregunta 4
-# entre las PASO y las generales,¿cuales fueron las provincia con con más votos en blanco?
+# CABA: votos no positivos
 
 preg_4 <- dbGetQuery(con, "
   SELECT eleccion_tipo, votos_tipo, distrito_nombre, SUM(votos_cantidad) as votos
