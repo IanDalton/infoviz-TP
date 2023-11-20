@@ -102,10 +102,33 @@ preg_3_plot = ggplot(preg_3, aes(x = distrito_nombre, y = votos, fill = eleccion
 
 preg_3_plot
 
-#########################################################################################
+# pregunta 4
+# entre las PASO y las generales,¿cuales fueron las provincia con con más votos en blanco?
 
+preg_4 <- dbGetQuery(con, "
+  SELECT eleccion_tipo, votos_tipo, distrito_nombre, SUM(votos_cantidad) as votos
+  FROM read_parquet('ResultadosElectorales_*.parquet')
+  WHERE cargo_id = 1
+    AND votos_tipo != 'POSITIVO' AND distrito_nombre IN ('Ciudad Autónoma de Buenos Aires')
+  GROUP BY eleccion_tipo, distrito_nombre, votos_tipo
+  ORDER BY distrito_nombre, votos DESC
+")
+preg_4
 
+nuevo_orden <- c("PASO", "GENERAL") 
 
+preg_4$eleccion_tipo <- factor(preg_4$eleccion_tipo, levels = nuevo_orden)
 
+preg_4_plot <- ggplot(preg_4, aes(x = eleccion_tipo, y = votos, group = votos_tipo, color = votos_tipo)) +
+  geom_line(size = 1) +
+  labs(title = "CABA: votos no positivos",
+       y = "Cantidad de Votos") +
+  scale_y_continuous(labels = scales::comma) + 
+  theme_minimal() +   
+  theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1), axis.title.x = element_blank()) + 
+  theme(plot.title = element_text(hjust = 0.5))
 
+print(preg_4_plot)
 
+# pregunta 5
+# cual es la relacion entre frente de todos y el resto de las agrupaciones
